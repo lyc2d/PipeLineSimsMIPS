@@ -340,14 +340,13 @@ void MEM()
 	MEM_WB.B=EX_MEM.B;
 	MEM_WB.imm=EX_MEM.imm;
 	MEM_WB.ALUOutput=EX_MEM.ALUOutput;//load
-        MEM_WB.ALUOutput2=0;//store
 	CURRENT_STATE.HI=0;
 	CURRENT_STATE.LO=0;
 
      uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
      uint32_t function= MEM_WB.IR & 0x0000003F;
      if(opcode == 0x00){
-		switch(function){
+		switch(function){}
 
      }
     else{
@@ -361,7 +360,13 @@ void MEM()
 void EX()
 {
 	/*IMPLEMENT THIS*/
+
+	uint64_t product, p1, p2;
 	uint32_t instruction, opcode, function, rs, rt, rd, sa, immediate, target;
+	uint32_t addr, data;
+	int branch_jump = FALSE;
+
+
 
 	EX_MEM.IR=ID_EX.IR;
 	EX_MEM.A=ID_EX.A;//rt
