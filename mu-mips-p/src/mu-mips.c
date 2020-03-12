@@ -338,38 +338,27 @@ void WB()
 	if(opcode == 0x00){
 		switch(function){
 				case 0x00: //SLL
-				EX_MEM.ALUOutput = EX_MEM.B << EX_MEM.imm;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				
 				break;
 
 			case 0x02: //SRL
-				EX_MEM.ALUOutput = EX_MEM.B >> EX_MEM.imm;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				
 				break;
 			case 0x03: //SRA 
-				if ((EX_MEM.A & 0x80000000) == 1)
-				{
-					EX_MEM.ALUOutput =  ~(~EX_MEM.B >> EX_MEM.imm );
-				}
-				else{
-					EX_MEM.ALUOutput= EX_MEM.B >> EX_MEM.imm;
-				}
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				break;
-			case 0x08: //JR
-				NEXT_STATE.PC = EX_MEM.B;
-				break;
-			case 0x09: //JALR
-				EX_MEM.B = CURRENT_STATE.PC + 4;
-				NEXT_STATE.PC = EX_MEM.B;
-				break;
+				
 			case 0x0C: //SYSCALL
 
 				break;
 			case 0x10: //MFHI
-				EX_MEM.ALUOutput = CURRENT_STATE.HI;
+				NEXT_STATE.REGS[rd] = CURRENT_STATE.HI;
+		
 				break;
 			case 0x11: //MTHI
-				NEXT_STATE.HI =EX_MEM.B;
+				NEXT_STATE.HI = MEM_WB.ALUOutput;
 				
 				break;
 			case 0x12: //MFLO
@@ -377,81 +366,55 @@ void WB()
 				
 				break;
 			case 0x13: //MTLO
-				NEXT_STATE.LO = EX_MEM.B;
+				NEXT_STATE.LO = MEM_WB.ALUOutput;
 				
 				break;
 			case 0x18: //MULT
-				if ((EX_MEM.B & 0x80000000) == 0x80000000){
-					p1 = 0xFFFFFFFF00000000 |EX_MEM.B;
-				}else{
-					p1 = 0x00000000FFFFFFFF & EX_MEM.B;
-				}
-				if ((EX_MEM.A & 0x80000000) == 0x80000000){
-					p2 = 0xFFFFFFFF00000000 | EX_MEM.A ;
-				}else{
-					p2 = 0x00000000FFFFFFFF & EX_MEM.A ;
-				}
-				product = p1 * p2;
-				NEXT_STATE.LO = (product & 0X00000000FFFFFFFF);
-				NEXT_STATE.HI = (product & 0XFFFFFFFF00000000)>>32;
-				
+				NEXT_STATE.HI = CURRENT_STATE.HI;
+				NEXT_STATE.LO = CURRENT_STATE.LO;
 				break;
 			case 0x19: //MULTU
-				product = (uint64_t)EX_MEM.B * (uint64_t)EX_MEM.A ;
-				NEXT_STATE.LO = (product & 0X00000000FFFFFFFF);
-				NEXT_STATE.HI = (product & 0XFFFFFFFF00000000)>>32;
+				NEXT_STATE.HI = CURRENT_STATE.HI;
+				NEXT_STATE.LO = CURRENT_STATE.LO;
 				
 				break;
 			case 0x1A: //DIV 
-				if(EX_MEM.A  != 0)
-				{
-					NEXT_STATE.LO = (int32_t)EX_MEM.B / (int32_t)EX_MEM.A ;
-					NEXT_STATE.HI = (int32_t)EX_MEM.B  % (int32_t)EX_MEM.A ;
-				}
-				
+				NEXT_STATE.HI = CURRENT_STATE.HI;
+				NEXT_STATE.LO = CURRENT_STATE.LO;
 				break;
 			case 0x1B: //DIVU
-				if(EX_MEM.A  != 0)
-				{
-					NEXT_STATE.LO = EX_MEM.B  / EX_MEM.A ;
-					NEXT_STATE.HI =EX_MEM.B  % EX_MEM.A ;
-				}
-				
+				NEXT_STATE.HI = CURRENT_STATE.HI;
+				NEXT_STATE.LO = CURRENT_STATE.LO;
 				break;
 			case 0x20: //ADD
-				EX_MEM.ALUOutput = EX_MEM.B  + EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 			
 				break;
 			case 0x21: //ADDU 
-				EX_MEM.ALUOutput = EX_MEM.B  + EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				
 				break;
 			case 0x22: //SUB
-				EX_MEM.ALUOutput = EX_MEM.B  - EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				break;
 			case 0x23: //SUBU
-				EX_MEM.ALUOutput = EX_MEM.B  - EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				break;
 			case 0x24: //AND
-				EX_MEM.ALUOutput = EX_MEM.B  & EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				break;
 			case 0x25: //OR
-				EX_MEM.ALUOutput = EX_MEM.B  | EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				break;
 			case 0x26: //XOR
-				EX_MEM.ALUOutput = EX_MEM.B  ^ EX_MEM.A;
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				break;
 			case 0x27: //NOR
-				EX_MEM.ALUOutput  = ~( EX_MEM.B  |  EX_MEM.A );
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				
 				break;
 			case 0x2A: //SLT
-				if( EX_MEM.B  < EX_MEM.A ){
-					EX_MEM.ALUOutput= 0x1;
-				}
-				else{
-					EX_MEM.ALUOutput = 0x0;
-				}
+				NEXT_STATE.REGS[rd] = MEM_WB.ALUOutput;
 				
 				break;
 			default:
@@ -460,7 +423,53 @@ void WB()
 		}
 	else{
 		switch(code){
+			case 0x08: //ADDI
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+				break;
+			case 0x09: //ADDIU
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+				break;
+			case 0x0A: //SLTI
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+				break;
+			case 0x0C: //ANDI
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+				break;
+			case 0x0D: //ORI
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+				break;
+			case 0x0E: //XORI
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+
+				break;
+			case 0x0F: //LUI
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput;
+
+				break;
+			case 0x20: //LB
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput2;
+				break;
+			case 0x21: //LH
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput2;
+
+				break;
+			case 0x23: //LW
+				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput2;
+				break;
+			case 0x28: //SB, don't need
 				
+				break;
+			case 0x29: //SH, don't need
+				
+				break;
+			case 0x2B: //SW, don't need
+				
+
+				break;
+			default:
+				
+				printf("Instruction at 0x%x is not implemented!\n", CURRENT_STATE.PC);
+				break;	
 				
 				
 		}		
@@ -496,7 +505,7 @@ void MEM()
 			}	
      }
     else{
-switch(code){//I/J type
+         switch(code){//I/J type
 		case 0x20: { //LB
 				uint32_t a = 0xFF & mem_read_32(EX_MEM.ALUOutput);
 				if(a >> 7) {	// then negative number
@@ -811,7 +820,7 @@ void EX()
 
 				break;
 			default:
-				// put more things here
+				/
 				printf("Instruction at 0x%x is not implemented!\n", CURRENT_STATE.PC);
 				break;
 		}
