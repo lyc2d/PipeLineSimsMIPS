@@ -326,7 +326,146 @@ void handle_pipeline()
 /************************************************************/
 void WB()
 {
-	/*IMPLEMENT THIS*/
+        uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
+	uint32_t function = MEM_WB.IR & 0x0000003F;
+	uint32_t rs = (MEM_WB.IR & 0x03E00000) >> 21;
+	uint32_t rt = (MEM_WB.IR & 0x001F0000) >> 16;
+	uint32_t rd = (MEM_WB.IR & 0x0000F800) >> 11;
+	uint32_t sa = (MEM_WB.IR & 0x000007C0) >> 6;
+	uint32_t immediate = MEM_WB.IR & 0x0000FFFF;
+	uint32_t target = MEM_WB.IR & 0x03FFFFFF;
+	
+	if(opcode == 0x00){
+		switch(function){
+				case 0x00: //SLL
+				EX_MEM.ALUOutput = EX_MEM.B << EX_MEM.imm;
+				
+				break;
+
+			case 0x02: //SRL
+				EX_MEM.ALUOutput = EX_MEM.B >> EX_MEM.imm;
+				
+				break;
+			case 0x03: //SRA 
+				if ((EX_MEM.A & 0x80000000) == 1)
+				{
+					EX_MEM.ALUOutput =  ~(~EX_MEM.B >> EX_MEM.imm );
+				}
+				else{
+					EX_MEM.ALUOutput= EX_MEM.B >> EX_MEM.imm;
+				}
+				break;
+			case 0x08: //JR
+				NEXT_STATE.PC = EX_MEM.B;
+				break;
+			case 0x09: //JALR
+				EX_MEM.B = CURRENT_STATE.PC + 4;
+				NEXT_STATE.PC = EX_MEM.B;
+				break;
+			case 0x0C: //SYSCALL
+
+				break;
+			case 0x10: //MFHI
+				EX_MEM.ALUOutput = CURRENT_STATE.HI;
+				break;
+			case 0x11: //MTHI
+				NEXT_STATE.HI =EX_MEM.B;
+				
+				break;
+			case 0x12: //MFLO
+				EX_MEM.ALUOutput  = CURRENT_STATE.LO;
+				
+				break;
+			case 0x13: //MTLO
+				NEXT_STATE.LO = EX_MEM.B;
+				
+				break;
+			case 0x18: //MULT
+				if ((EX_MEM.B & 0x80000000) == 0x80000000){
+					p1 = 0xFFFFFFFF00000000 |EX_MEM.B;
+				}else{
+					p1 = 0x00000000FFFFFFFF & EX_MEM.B;
+				}
+				if ((EX_MEM.A & 0x80000000) == 0x80000000){
+					p2 = 0xFFFFFFFF00000000 | EX_MEM.A ;
+				}else{
+					p2 = 0x00000000FFFFFFFF & EX_MEM.A ;
+				}
+				product = p1 * p2;
+				NEXT_STATE.LO = (product & 0X00000000FFFFFFFF);
+				NEXT_STATE.HI = (product & 0XFFFFFFFF00000000)>>32;
+				
+				break;
+			case 0x19: //MULTU
+				product = (uint64_t)EX_MEM.B * (uint64_t)EX_MEM.A ;
+				NEXT_STATE.LO = (product & 0X00000000FFFFFFFF);
+				NEXT_STATE.HI = (product & 0XFFFFFFFF00000000)>>32;
+				
+				break;
+			case 0x1A: //DIV 
+				if(EX_MEM.A  != 0)
+				{
+					NEXT_STATE.LO = (int32_t)EX_MEM.B / (int32_t)EX_MEM.A ;
+					NEXT_STATE.HI = (int32_t)EX_MEM.B  % (int32_t)EX_MEM.A ;
+				}
+				
+				break;
+			case 0x1B: //DIVU
+				if(EX_MEM.A  != 0)
+				{
+					NEXT_STATE.LO = EX_MEM.B  / EX_MEM.A ;
+					NEXT_STATE.HI =EX_MEM.B  % EX_MEM.A ;
+				}
+				
+				break;
+			case 0x20: //ADD
+				EX_MEM.ALUOutput = EX_MEM.B  + EX_MEM.A;
+			
+				break;
+			case 0x21: //ADDU 
+				EX_MEM.ALUOutput = EX_MEM.B  + EX_MEM.A;
+				
+				break;
+			case 0x22: //SUB
+				EX_MEM.ALUOutput = EX_MEM.B  - EX_MEM.A;
+				break;
+			case 0x23: //SUBU
+				EX_MEM.ALUOutput = EX_MEM.B  - EX_MEM.A;
+				break;
+			case 0x24: //AND
+				EX_MEM.ALUOutput = EX_MEM.B  & EX_MEM.A;
+				break;
+			case 0x25: //OR
+				EX_MEM.ALUOutput = EX_MEM.B  | EX_MEM.A;
+				break;
+			case 0x26: //XOR
+				EX_MEM.ALUOutput = EX_MEM.B  ^ EX_MEM.A;
+				break;
+			case 0x27: //NOR
+				EX_MEM.ALUOutput  = ~( EX_MEM.B  |  EX_MEM.A );
+				
+				break;
+			case 0x2A: //SLT
+				if( EX_MEM.B  < EX_MEM.A ){
+					EX_MEM.ALUOutput= 0x1;
+				}
+				else{
+					EX_MEM.ALUOutput = 0x0;
+				}
+				
+				break;
+			default:
+				printf("Instruction at 0x%x is not implemented!\n", CURRENT_STATE.PC);
+				break;
+		}
+	else{
+		switch(code){
+				
+				
+				
+		}		
+				
+	}
 }
 
 /************************************************************/
@@ -348,10 +487,57 @@ void MEM()
      uint32_t function= MEM_WB.IR & 0x0000003F;
      if(opcode == 0x00){
 		switch(function){
-
+               case 0x0C: { //SYSTEMCALL
+			       break;// we don't need to do anything with R insutuction
+	       }
+	        default: {
+		           printf(" Wrong\t");
+				//No R type
+			}	
      }
     else{
-
+switch(code){//I/J type
+		case 0x20: { //LB
+				uint32_t a = 0xFF & mem_read_32(EX_MEM.ALUOutput);
+				if(a >> 7) {	// then negative number
+					byte = (0xFFFFFF00 | a); //sign extend with 1's
+				}
+				MEM_WB.ALUOutput2 = byte;
+				break;
+			}
+			case 0x21: { //LH
+				uint32_t b = 0xFFFF & mem_read_32(EX_MEM.ALUOutput);
+				if(b >> 15) {	// then negative number
+					b = (0xFFFF0000 | b); //sign extend with 1's
+				}
+				MEM_WB.ALUOutput2 = b;
+				break;
+			}
+			case 0x23: { //LW
+				uint32_t c = mem_read_32(EX_MEM.ALUOutput);
+				MEM_WB.ALUOutput2 = c;
+				break;
+			}
+			case 0x28: { //SB
+				mem_write_32(EX_MEM.ALUOutput,EX_MEM.B);
+				break;
+			}
+			case 0x29: { //SH
+				mem_write_32(EX_MEM.ALUOutput,EX_MEM.B);
+				break;
+			}
+			case 0x2B: { //SW
+				mem_write_32(EX_MEM.ALUOutput,EX_MEM.B);
+				break;
+			}
+			default: {
+				printf("this instruction has not been handled\t");
+				//Not an instruction accessing memory
+			}	     
+			     
+			     
+	     }
+			     
 	}
 }
 
