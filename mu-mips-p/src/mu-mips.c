@@ -456,13 +456,13 @@ void WB()
 			case 0x23: //LW
 				NEXT_STATE.REGS[rt] = MEM_WB.LMD;
 				break;
-			case 0x28: //SB, don't need
+			case 0x28: //SB, don't do any thing
 				
 				break;
-			case 0x29: //SH, don't need
+			case 0x29: //SH, don't do any thing
 				
 				break;
-			case 0x2B: //SW, don't need
+			case 0x2B: //SW, don't do any thing
 				
 
 				break;
