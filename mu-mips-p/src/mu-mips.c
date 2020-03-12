@@ -321,30 +321,6 @@ void handle_pipeline()
 	IF();
 }
 
-/************************************************************/
-/* writeback (WB) pipeline stage:                                                                          */ 
-/************************************************************/
-void WB()
-{
-	uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
-	function = MEM_WB.IR & 0x0000003F;
-	rs = (MEM_WB.IR & 0x03E00000) >> 21;
-	rt = (MEM_WB.IR & 0x001F0000) >> 16;
-	rd = (MEM_WB.IR & 0x0000F800) >> 11;
-	sa = (MEM_WB.IR & 0x000007C0) >> 6;
-	immediate = MEM_WB.IR & 0x0000FFFF;
-	target = MEM_WB.IR & 0x03FFFFFF;
-	
-	
-	if(opcode == 0x00){
-		switch(function){//R Type
-				
-		}
-	else{
-		switch(code){
-				
-		}
-}
 
 /************************************************************/
 /* memory access (MEM) pipeline stage:                                                          */ 
@@ -363,15 +339,19 @@ void MEM()
 
      uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
      uint32_t function= MEM_WB.IR & 0x0000003F;
+
+//load
+
+	MEM_WB.LMD = mem_read_32(EX_MEM.ALUOutput);
+
+
+//store
+	mem_write_32(EX_MEM.ALUOutput, EX_MEM.B);
+
+
      if(opcode == 0x00){
 		switch(function){
-		 case 0x0C: { //SYSTEMCALL
-			       break;// we don't need to do anything with R instruction
-		}
-                default: {
-		           printf(" Wrong\t");
-				//No R type
-			}	
+
      }
     else{
           switch(code){//I/J type
@@ -761,6 +741,24 @@ void print_program(){
 /************************************************************/
 void show_pipeline(){
 	/*IMPLEMENT THIS*/
+	printf("Current PC:\t %X\n",CURRENT_STATE);
+	printf("IF/ID.IR:\t %X\n",IF_ID.IR);
+	printf("IF/ID.PC:\t %X\n",IF_ID.PC);
+
+	printf("ID/EX.IR:\t %X\n",ID_EX.IR);
+	printf("ID/EX.A:\t %X\n",ID_EX.A);
+	printf("ID/EX.B:\t %X\n",ID_EX.B);
+	printf("ID/EX.imm:\t %X\n",ID_EX.imm);
+
+	printf("EX/MEM.IR:\t %X\n",EX_MEM);
+	printf("EX/MEM.A:\t %X\n",EX_MEM.A);
+	printf("EX/MEM.B:\t %X\n",EX_MEM.B);
+	printf("EX/MEM.ALUOutput:\t %X\n",EX_MEM.ALUOutput);
+
+	printf("MEM/WB.IR\t %X\n",MEM_WB.IR);
+	printf("MEM/WB.ALUOutput\t %X\n",MEM_WB.ALUOutput);
+	printf("MEM/WB.LMD\t %X\n",MEM_WB.LMD);
+
 }
 
 /***************************************************************/
