@@ -362,7 +362,7 @@ void EX()
 	/*IMPLEMENT THIS*/
 
 	uint64_t product, p1, p2;
-	uint32_t instruction, opcode, function, rs, rt, rd, sa, immediate, target;
+	uint32_t opcode, function, rt, immediate, target, rs, rd,sa;
 	uint32_t addr, data;
 	int branch_jump = FALSE;
 
@@ -649,12 +649,13 @@ ID/EX.A <= REGS[ IF/ID.IR[rs] ]
 ID/EX.B <= REGS[ IF/ID.IR[rt] ]
 ID/EX.imm <= sign-extend( IF/ID.IR[imm. Field])
 */
+	uint32_t instruction, opcode, function, rs, rt, rd, sa;
 
 
 	ID_EX.IR = IF_ID.IR;
-	ID_EX.A  = CURRENT_STATE.REGS[IF_ID.IR[rs]];
-	ID_EX.b  = CURRENT_STATE.REGS[IF_ID.IR[rt]];
-	ID_EX.imm = ( (IF_ID.IR.imm & 0x8000) > 0 ? (IF_ID.IR.imm | 0xFFFF0000) : (IF_ID.IR.imm & 0x0000FFFF));
+	ID_EX.A  = CURRENT_STATE.REGS[IF_ID.IR];
+	ID_EX.B  = CURRENT_STATE.REGS[IF_ID.IR];
+	ID_EX.imm = ( (IF_ID.imm & 0x8000) > 0 ? (IF_ID.imm | 0xFFFF0000) : (IF_ID.imm & 0x0000FFFF));
 
 }
 
