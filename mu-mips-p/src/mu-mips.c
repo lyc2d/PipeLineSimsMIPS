@@ -326,7 +326,24 @@ void handle_pipeline()
 /************************************************************/
 void WB()
 {
-	/*IMPLEMENT THIS*/
+	uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
+	function = MEM_WB.IR & 0x0000003F;
+	rs = (MEM_WB.IR & 0x03E00000) >> 21;
+	rt = (MEM_WB.IR & 0x001F0000) >> 16;
+	rd = (MEM_WB.IR & 0x0000F800) >> 11;
+	sa = (MEM_WB.IR & 0x000007C0) >> 6;
+	immediate = MEM_WB.IR & 0x0000FFFF;
+	target = MEM_WB.IR & 0x03FFFFFF;
+	
+	
+	if(opcode == 0x00){
+		switch(function){//R Type
+				
+		}
+	else{
+		switch(code){
+				
+		}
 }
 
 /************************************************************/
@@ -340,17 +357,62 @@ void MEM()
 	MEM_WB.B=EX_MEM.B;
 	MEM_WB.imm=EX_MEM.imm;
 	MEM_WB.ALUOutput=EX_MEM.ALUOutput;//load
+	MEM_WB.ALUOutput2=0;//store
 	CURRENT_STATE.HI=0;
 	CURRENT_STATE.LO=0;
 
      uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
      uint32_t function= MEM_WB.IR & 0x0000003F;
      if(opcode == 0x00){
-		switch(function){}
-
+		switch(function){
+		 case 0x0C: { //SYSTEMCALL
+			       break;// we don't need to do anything with R instruction
+		}
+                default: {
+		           printf(" Wrong\t");
+				//No R type
+			}	
      }
     else{
-
+          switch(code){//I/J type
+		case 0b100000: { //LB
+				uint32_t a = 0xFF & mem_read_32(EX_MEM.ALUOutput);
+				if(a >> 7) {	// then negative number
+					byte = (0xFFFFFF00 | a); //sign extend with 1's
+				}
+				MEM_WB.ALUOutput2 = byte;
+				break;
+			}
+			case 0b100001: { //LH
+				uint32_t b = 0xFFFF & mem_read_32(EX_MEM.ALUOutput);
+				if(b >> 15) {	// then negative number
+					b = (0xFFFF0000 | b); //sign extend with 1's
+				}
+				MEM_WB.ALUOutput2 = b;
+				break;
+			}
+			case 0b100011: { //LW
+				uint32_t c = mem_read_32(EX_MEM.ALUOutput);
+				MEM_WB.ALUOutput2 = c;
+				break;
+			}
+			case 0b101000: { //SB
+				mem_write_32(EX_MEM.ALUOutput,EX_MEM.B);
+				break;
+			}
+			case 0b101001: { //SH
+				mem_write_32(EX_MEM.ALUOutput,EX_MEM.B);
+				break;
+			}
+			case 0b101011: { //SW
+				mem_write_32(EX_MEM.ALUOutput,EX_MEM.B);
+				break;
+			}
+			default: {
+				printf("this instruction has not been handled\t");
+				//Not an instruction accessing memory
+			}	     
+			     
 	}
 }
 
