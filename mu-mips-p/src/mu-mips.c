@@ -447,14 +447,14 @@ void WB()
 
 				break;
 			case 0x20: //LB
-				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput2;
+				NEXT_STATE.REGS[rt] = MEM_WB.LMD;
 				break;
 			case 0x21: //LH
-				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput2;
+				NEXT_STATE.REGS[rt] = MEM_WB.LMD;
 
 				break;
 			case 0x23: //LW
-				NEXT_STATE.REGS[rt] = MEM_WB.ALUOutput2;
+				NEXT_STATE.REGS[rt] = MEM_WB.LMD;
 				break;
 			case 0x28: //SB, don't need
 				
@@ -488,7 +488,7 @@ void MEM()
 	MEM_WB.B=EX_MEM.B;
 	MEM_WB.imm=EX_MEM.imm;
 	MEM_WB.ALUOutput=EX_MEM.ALUOutput;//load
-        MEM_WB.ALUOutput2=0;//store
+        MEM_WB.LMD=0;//store
 	CURRENT_STATE.HI=0;
 	CURRENT_STATE.LO=0;
 
@@ -511,7 +511,7 @@ void MEM()
 				if(a >> 7) {	// then negative number
 					byte = (0xFFFFFF00 | a); //sign extend with 1's
 				}
-				MEM_WB.ALUOutput2 = byte;
+				MEM_WB.LMD = byte;
 				break;
 			}
 			case 0x21: { //LH
@@ -519,12 +519,12 @@ void MEM()
 				if(b >> 15) {	// then negative number
 					b = (0xFFFF0000 | b); //sign extend with 1's
 				}
-				MEM_WB.ALUOutput2 = b;
+				MEM_WB.LMD = b;
 				break;
 			}
 			case 0x23: { //LW
 				uint32_t c = mem_read_32(EX_MEM.ALUOutput);
-				MEM_WB.ALUOutput2 = c;
+				MEM_WB.LMD = c;
 				break;
 			}
 			case 0x28: { //SB
