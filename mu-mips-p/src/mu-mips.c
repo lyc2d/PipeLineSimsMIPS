@@ -508,7 +508,7 @@ void MEM()
          switch(code){//I/J type
 		case 0x20: { //LB
 				uint32_t a = 0xFF & mem_read_32(EX_MEM.ALUOutput);
-				if(a >> 7) {	// then negative number
+				if(a >> 7) {	//  negative number
 					byte = (0xFFFFFF00 | a); //sign extend with 1's
 				}
 				MEM_WB.LMD = byte;
@@ -516,7 +516,7 @@ void MEM()
 			}
 			case 0x21: { //LH
 				uint32_t b = 0xFFFF & mem_read_32(EX_MEM.ALUOutput);
-				if(b >> 15) {	// then negative number
+				if(b >> 15) {	// negative number
 					b = (0xFFFF0000 | b); //sign extend with 1's
 				}
 				MEM_WB.LMD = b;
