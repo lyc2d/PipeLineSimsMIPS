@@ -327,6 +327,7 @@ void handle_pipeline()
 void WB()
 {
 	/*IMPLEMENT THIS*/
+
 }
 
 /************************************************************/
@@ -345,8 +346,22 @@ void MEM()
 
      uint32_t opcode = (MEM_WB.IR & 0xFC000000) >> 26;
      uint32_t function= MEM_WB.IR & 0x0000003F;
+
+//load
+
+	MEM_WB.LMD = mem_read_32(EX_MEM.ALUOutput);
+
+
+//store
+	mem_write_32(EX_MEM.ALUOutput, EX_MEM.B);
+
+
      if(opcode == 0x00){
-		switch(function){}
+		switch(function){
+
+
+
+		}
 
      }
     else{
@@ -699,6 +714,24 @@ void print_program(){
 /************************************************************/
 void show_pipeline(){
 	/*IMPLEMENT THIS*/
+	printf("Current PC:\t %X\n",CURRENT_STATE);
+	printf("IF/ID.IR:\t %X\n",IF_ID.IR);
+	printf("IF/ID.PC:\t %X\n",IF_ID.PC);
+
+	printf("ID/EX.IR:\t %X\n",ID_EX.IR);
+	printf("ID/EX.A:\t %X\n",ID_EX.A);
+	printf("ID/EX.B:\t %X\n",ID_EX.B);
+	printf("ID/EX.imm:\t %X\n",ID_EX.imm);
+
+	printf("EX/MEM.IR:\t %X\n",EX_MEM);
+	printf("EX/MEM.A:\t %X\n",EX_MEM.A);
+	printf("EX/MEM.B:\t %X\n",EX_MEM.B);
+	printf("EX/MEM.ALUOutput:\t %X\n",EX_MEM.ALUOutput);
+
+	printf("MEM/WB.IR\t %X\n",MEM_WB.IR);
+	printf("MEM/WB.ALUOutput\t %X\n",MEM_WB.ALUOutput);
+	printf("MEM/WB.LMD\t %X\n",MEM_WB.LMD);
+
 }
 
 /***************************************************************/
